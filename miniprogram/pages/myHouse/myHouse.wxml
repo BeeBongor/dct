@@ -1,0 +1,281 @@
+<view class="container">
+
+  <!-- 用户 openid -->
+  <view class="userinfo">
+    <button open-type="getUserInfo" bindgetuserinfo="onGetUserInfo" class="userinfo-avatar" style="background-image: url({{avatarUrl}})"></button>
+    <view>
+
+      <tab class="myHouse">我的房券</tab>
+
+
+      <tab class="addHouse" bindtap="powerDrawer" data-statu="open">新增房券</tab>
+
+    </view>
+  </view>
+
+  <!-- <view class="table">
+    <view class="tr bg-w">
+      <view class="th">城市</view>
+      <view class="th">酒店</view>
+      <view class="th">价格</view>
+      <view class="th">联系人</view>
+      <view class="th">可用数量</view>
+      <view class="th">详情</view>
+      <view class="th">编辑</view>
+    </view>
+
+    <block wx:for="{{data2}}" wx:key="{{id}}">
+      <view class="tr bg-g" wx:if="{{index % 2 == 0}}">
+        <view class="td">{{item.hotelCity}}</view>
+        <view class="td">{{item.hotelName}}</view>
+        <view class="td">{{item.hotelPrice}}</view>
+        <view class="td">{{item.hotelContact}}</view>
+        <view class="td">{{item.hotelCount}}</view>
+        <view class="td">{{item.unUseTime}}</view>
+        <view class="td">{{item.unUseTime}}</view>
+      </view>
+      <view class="tr" wx:else>
+        <view class="td">{{item.hotelCity}}</view>
+        <view class="td">{{item.hotelName}}</view>
+        <view class="td">{{item.hotelPrice}}</view>
+        <view class="td">{{item.hotelContact}}</view>
+        <view class="td">{{item.hotelCount}}</view>
+        <view class="td">{{item.unUseTime}}</view>
+        <view class="td">{{item.unUseTime}}</view>
+      </view>
+    </block>
+  </view> -->
+
+  <view class="table">
+    <view class="tr bg-w">
+      <!-- <view class="td1 all-sort-list {{states==0?'all-act':''}}">
+      <view wx:for="{{all_list}}" class="all-sort" data-index="{{item.num}}">{{item.txt}}</view>
+      </view> -->
+      <view class="sort tdHeader" data-num="0">
+
+        城市
+
+      </view>
+      <view class="tdHeader1">酒店</view>
+      <!-- <view class="td">联系人</view> -->
+      <view class="tdHeader1">价格</view>
+      <!-- <view class="td">数量</view> -->
+      <view class="tdHeader1">不可用时段</view>
+      <view class="tdHeader1">操作</view>
+    </view>
+    <!-- 城市选择 -->
+    <view id="chooseCity" hidden="{{cityHidden}}" class="all-sort-list {{states==0?'all-act':''}}" bindtap="selectByCity">
+      <select wx:for="{{all_list}}" class="all-sort" data-index="{{item.num}}" data-city="{{item.name}}">{{item.name}}</select>
+    </view>
+
+    <!-- <block class="" wx:for="{{allHotelInfo}}" wx:key="{{id}}"> -->
+    <block class="" wx:for="{{myAllHotelInfo}}">
+      <view class="tr bg-g" wx:if="{{index % 2 == 0}}">
+        <view class="tdHeader">{{item.hotelCity}}</view>
+        <view class="td td_hotelName">
+          <text selectable='true'>{{item.hotelName}}</text>
+        </view>
+        <!-- <view class="td" ><text selectable='true'>{{item.hotelContact}}</text></view> -->
+        <view class="td">{{item.hotelPrice}}</view>
+        <!-- <view class="td">{{item.hotelCount}}</view> -->
+        <view class="td td_unUseTime">{{item.unUseTime}}</view>
+        <view class="td watch" data-id="{{item._id}}" bindtap="editDetailInfoById">编辑</view>
+      </view>
+      <view class="tr" wx:else>
+        <view class="tdHeader">{{item.hotelCity}}</view>
+        <view class="td td_hotelName">
+          <text selectable='true'>{{item.hotelName}}</text>
+        </view>
+        <!-- <view class="td"><text selectable='true'>{{item.hotelContact}}</text></view> -->
+        <view class="td">{{item.hotelPrice}}</view>
+        <!-- <view class="td">{{item.hotelCount}}</view> -->
+        <view class="td td_unUseTime">{{item.unUseTime}}</view>
+        <view class="td watch" data-id="{{item._id}}" bindtap="editDetailInfoById">编辑</view>
+      </view>
+    </block>
+  </view>
+
+
+  <!--mask-->
+  <view class="drawer_screen" bindtap="powerDrawer" data-statu="close" wx:if="{{showModalStatus}}"></view>
+  <!--content-->
+  <!-- 弹出新增框 -->
+  <view animation="{{animationData}}" class="drawer_box" wx:if="{{showModalStatus}}">
+
+    <!--drawer content-->
+    <view class="drawer_title">新增房券</view>
+    <view class="drawer_content">
+      <view class="top bottom grid " hidden="{{hiddenCondition}}">
+        <label class="redLabel">{{errorInfo}}</label>
+      </view>
+      <view class="top grid">
+        <label class="title col-0">输入城市
+          <label class="redLabel">*</label>
+        </label>
+        <input class="input_base input_h30 col-1" bindinput="cityInput" name="hotelCity" placeholder="北京"></input>
+      </view>
+      <view class="top grid ">
+        <label class="title col-0 ">酒店名
+          <label class="redLabel">*</label>
+        </label>
+        <input class="input_base input_h30 col-1 " bindinput="hotelNameInput" name="hotelName" placeholder="三里屯"></input>
+      </view>
+      <view class="top grid ">
+        <label class="title col-0 ">联系人</label>
+        <input class="input_base input_h30 col-1 " bindinput="contactInput" name="phone " placeholder="(初次提交填写)例：邓先生"></input>
+      </view>
+      <view class="top grid ">
+        <label class="title col-0 ">联系方式</label>
+        <input class="input_base input_h30 col-1 " bindinput="contactTelInput" name="phone " placeholder="(初次提交填写)手机号或微信号"></input>
+      </view>
+      <view class="top grid ">
+        <label class="title col-0 ">单价
+          <label class="redLabel ">*</label>
+        </label>
+        <input class="input_base input_h30 col-1 " bindinput="priceInput" name="Email " placeholder="￥200/携程当日价的50%"></input>
+      </view>
+      <view class="top bottom grid ">
+        <label class="title col-0 ">房券数量
+          <label class="redLabel ">*</label>
+        </label>
+        <input class="input_base input_h30 col-1 " bindinput="countInput" name="count " placeholder="消费金总额/房单价 "></input>
+      </view>
+      <view class="top bottom grid ">
+        <label class="title col-0">交易模式
+          <label class="redLabel">*</label>
+        </label>
+        <!-- <input class="input_base input_h30 col-1 " name="count " value="线上代订/电子券/线下邮寄 "></input> -->
+        <view class="input_h30 col-1 right_board">
+          <Select class="" index="transRoad" bindInput="transRoadInput" prop-array='{{transRoad}}'></Select>
+        </view>
+
+
+      </view>
+      <view class="top bottom grid ">
+        <label class="title col-0 ">不可用时段
+          <label class="redLabel">*</label>
+        </label>
+        <!-- <input class="input_base input_h30 col-1 " name="count " value="无/法定节假日/五一、十一、春节不可用"></input>  -->
+        <view class="input_h30 col-1 right_board">
+          <Select class="" field="unUseTime" prop-array='{{unUseTime}}'></Select>
+        </view>
+
+
+      </view>
+
+
+      <view class="top bottom grid ">
+        <label class="title col-0 ">房券失效日
+        </label>
+        <picker class="input_base input_h30 col-1 " mode="date" value="{{expireDate}}" start="2019-10-10" end="" bindchange="bandDateChange">
+          <!-- <view  name="date"> -->
+          <input style="height:100% width:100%" value="{{expireDate}}" disabled="true" placeholder="选择日期(默认1年)"></input>
+          <!-- </view> -->
+        </picker>
+
+      </view>
+
+      <view class="top bottom grid ">
+        <label class="title col-0 ">备注</label>
+        <input class="input_base input_h30 col-1 " bindinput="beizhuInput" name="bz" placeholder="特殊事项说明"></input>
+      </view>
+
+    </view>
+    <view class="btn_ok" bindtap="submitHouseInfo" data-statu="close">提交</view>
+  </view>
+
+
+  <!-- 弹出编辑框 -->
+  <modal hidden="{{editModalHidden}}" bindcancel="modalCancel" bindconfirm="updateMyHouseDetail">
+    <!--drawer content-->
+    <view class="drawer_title">编辑</view>
+    <view class="drawer_content">
+      <view class="top bottom grid " hidden="{{edithiddenCondition}}">
+        <label class="redLabel">{{errorEditInfo}}</label>
+      </view>
+      <view class="top grid">
+        <label class="title col-0">输入城市
+          <label class="redLabel">*</label>
+        </label>
+        <input class="input_base input_h30 col-1" disabled="true" bindinput="editCityInput" name="hotelCity" value="{{editDetailInfo.hotelCity}}(不予修改)"></input>
+      </view>
+      <view class="top grid ">
+        <label class="title col-0 ">酒店名
+          <label class="redLabel">*</label>
+        </label>
+        <input class="input_base input_h30 col-1 " disabled="true" bindinput="edithotelNameInput" name="hotelName" value="{{editDetailInfo.hotelName}}(不予修改)"></input>
+      </view>
+      <view class="top grid ">
+        <label class="title col-0 ">联系人</label>
+        <input class="input_base input_h30 col-1 " disabled="true"  bindinput="editcontactNameInput" name="phone " value="{{editDetailInfo.contactName}}(不予修改)"></input>
+      </view>
+      <view class="top grid ">
+        <label class="title col-0 ">联系方式</label>
+        <input class="input_base input_h30 col-1 " bindinput="eidtcontactTelInput" name="phone " value="{{editDetailInfo.contactTel}}"></input>
+      </view>
+      <view class="top grid ">
+        <label class="title col-0 ">单价
+          <label class="redLabel ">*</label>
+        </label>
+        <input class="input_base input_h30 col-1 " bindinput="editpriceInput" name="Email " value="{{editDetailInfo.hotelPrice}}"></input>
+      </view>
+      <view class="top bottom grid ">
+        <label class="title col-0 ">房券数量
+          <label class="redLabel ">*</label>
+        </label>
+        <input class="input_base input_h30 col-1 " bindinput="editcountInput" name="count " value="{{editDetailInfo.hotelCount}}"></input>
+      </view>
+
+      <view class="top bottom grid">
+        <label class="title col-0 ">交易模式
+          <label class="redLabel">*</label>
+        </label>
+        <picker class="input_h30 col-1 input_base" bindchange="bindTransRoadPickerChange" value="{{transRoadIndex}}" range="{{editTransRoadPicker}}">
+          <view class="picker">
+            {{editTransRoadPicker[transRoadIndex]}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="top bottom grid">
+        <label class="title col-0 ">不可用时段
+          <label class="redLabel">*</label>
+        </label>
+        <picker class="input_h30 col-1 input_base" bindchange="bindPickerChange" value="{{unUseTimeIndex}}" range="{{editUseTimePicker}}">
+          <view class="picker">
+            {{editUseTimePicker[unUseTimeIndex]}}
+          </view>
+        </picker>
+      </view>
+
+
+      <view class="top bottom grid ">
+        <label class="title col-0 ">房券失效日
+        </label>
+        <picker class="input_base input_h30 col-1 " mode="date" value="{{editExpireDate}}" start="2019-10-10" end="" bindchange="editBandDateChange">
+          <!-- <view  name="date"> -->
+          <input style="height:100% width:100%" value="{{editExpireDate}}" disabled="true" placeholder="{{editExpireDate}}"></input>
+          <!-- </view> -->
+        </picker>
+
+      </view>
+
+      <view class="top bottom grid ">
+        <label class="title col-0 ">备注</label>
+        <input class="input_base input_h30 col-1 " bindinput="editbeizhuInput" name="bz" value="{{editDetailInfo.ext}}"></input>
+      </view>
+
+      <!-- <view class="btn_ok" bindtap="updateMyHouseDetail" data-statu="close">提交</view>   -->
+
+
+    </view>
+  </modal>
+
+  <view class='container'>
+    <view class="logo">
+
+      <view class="logo_ground">@Copyright 建议&合作 15071476193</view>
+    </view>
+  </view>
+
+</view>

@@ -1,0 +1,122 @@
+<!--index.wxml-->
+<view class="container">
+
+  <!-- 用户 openid -->
+  <view class="userinfo">
+    <button open-type="getUserInfo" bindgetuserinfo="onGetUserInfo" class="userinfo-avatar" style="background-image: url({{avatarUrl}})"></button>
+    <view>
+      <navigator url="../myHouse/myHouse" open-type="navigate" class="uploader-text">
+        <button class="userinfo-nickname">点击查看我的房券</button>
+      </navigator>
+    </view>
+  </view>
+
+  <!-- 选择时段 -->
+  <!-- 公告 -->
+<view class='adsec' hidden="{{announcementHidden}}">
+  <icon class='iconfont icongonggao c_main fs_36'></icon>
+  <text class='c_main fs_26'>公告：</text>
+  <swiper class="swiper_container" autoplay="true" circular="true" interval="6000">
+    <block wx:for="{{announcementContent}}">
+      
+        <swiper-item>
+        <navigator url="{{item.url}}" open-type="navigate"> 
+          <view class="swiper_item"><text selectable='true'>{{item.text}}</text></view>
+          </navigator> 
+          <!-- web-view是打开h5页面，需要配置合法业务域名 -->
+          <!-- <web-view src="{{item.url}}" open-type="navigate"> 
+          <view class="swiper_item">{{item.text}}</view>
+          </web-view> -->
+        </swiper-item>
+      
+   </block>
+  </swiper>
+</view>
+<!-- 公告 end -->
+
+  <view class="table">
+    <view class="tr bg-w">
+      <!-- <view class="td1 all-sort-list {{states==0?'all-act':''}}">
+      <view wx:for="{{all_list}}" class="all-sort" data-index="{{item.num}}">{{item.txt}}</view>
+      </view> -->
+      <view class="sort tdHeader" bindtap="changeBoxBtn" data-num="0">
+
+        城市
+        <image src="../../images/pulldown.png" style="width:8px;height:8px;"></image>
+
+      </view>
+      <view class="tdHeader2">酒店</view>
+      <!-- <view class="td">联系人</view> -->
+      <view class="tdHeader1">价格</view>
+      <!-- <view class="td">数量</view> -->
+      <view class="tdHeader1">不可用时段</view>
+      <view class="tdHeader1">详情</view>
+    </view>
+    <!-- 城市选择 -->
+    <view id="chooseCity" hidden="{{cityHidden}}" class="all-sort-list {{states==0?'all-act':''}}" bindtap="selectByCity">
+      <select wx:for="{{all_list}}" class="all-sort" data-index="{{item.num}}" data-city="{{item.name}}">{{item.name}}</select>
+    </view>
+
+    <!-- <block class="" wx:for="{{allHotelInfo}}" wx:key="{{id}}"> -->
+    <block class="" wx:for="{{allHotelInfo}}">
+      <view class="tr bg-g" wx:if="{{index % 2 == 0}}">
+        <view class="tdHeader">{{item.hotelCity}}</view>
+        <view class="td td_hotelName">
+          <text selectable='true'>{{item.hotelName}}</text>
+        </view>
+        <!-- <view class="td" ><text selectable='true'>{{item.hotelContact}}</text></view> -->
+        <view class="td">{{item.hotelPrice}}</view>
+        <!-- <view class="td">{{item.hotelCount}}</view> -->
+        <view class="td td_unUseTime">{{item.unUseTime}}</view>
+        <view class="td watch" data-id="{{item._id}}" bindtap="showDetailInfoById">查看</view>
+      </view>
+      <view class="tr" wx:else>
+        <view class="tdHeader">{{item.hotelCity}}</view>
+        <view class="td td_hotelName">
+          <text selectable='true'>{{item.hotelName}}</text>
+        </view>
+        <!-- <view class="td"><text selectable='true'>{{item.hotelContact}}</text></view> -->
+        <view class="td">{{item.hotelPrice}}</view>
+        <!-- <view class="td">{{item.hotelCount}}</view> -->
+        <view class="td td_unUseTime">{{item.unUseTime}}</view>
+        <view class="td watch" data-id="{{item._id}}" bindtap="showDetailInfoById">查看</view>
+      </view>
+    </block>
+    <view hidden="{{pageChooseHidden}}">
+      <button class='{{currentPage>0 ? "prebutton": "preDisableButton"}}' disabled='{{currentPage>0 ?false:true}}' bindtap="prePage">上一页</button>
+      <button class='{{totalPage-currentPage>1?"nextbutton":"nextDisableButton"}}' disabled='{{totalPage-currentPage>1 ?false:true}}' bindtap="nextPage">下一页</button>
+    </view>
+
+
+  </view>
+
+
+
+
+  <modal hidden="{{hiddenDetailModal}}" height='60%' bindcancel="modalCancel" bindconfirm='modalConfirm'>
+    <view class='modal-content'>城市：{{detailHotel.hotelCity}}</view>
+    <view class='modal-content'>酒店名：{{detailHotel.hotelName}}</view>
+    <view class='modal-content'>单晚房价：{{detailHotel.hotelPrice}}</view>
+    <view class='modal-content'>可用数量：{{detailHotel.hotelCount}}</view>
+    <view class='modal-content'>
+      <text selectable='true'>联系人：{{detailHotel.hotelContact}}</text>
+    </view>
+    <view class='modal-content'>不可用时段：{{detailHotel.unUseTime}}</view>
+    <view class='modal-content'>交易模式(建议走闲鱼)：{{detailHotel.transRoad}}</view>
+    <view class='modal-content'>房券失效时间：{{detailHotel.expireDate}}</view>
+    <view class='modal-content'>注意事项：{{detailHotel.ext}}</view>
+  </modal>
+
+
+
+
+  <!--index.wxml-->
+  <view class='container'>
+    <view class="logo">
+
+      <view class="logo_ground">@Copyright 建议&合作 15071476193</view>
+    </view>
+  </view>
+
+
+</view>
