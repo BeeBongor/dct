@@ -4,12 +4,15 @@
   <!-- 用户 openid -->
   <view class="userinfo">
     <button open-type="getUserInfo" bindgetuserinfo="onGetUserInfo" class="userinfo-avatar" style="background-image: url({{avatarUrl}})"></button>
-    <view>
+    <view style="width:40%">
       <navigator url="../myHouse/myHouse" open-type="navigate" class="uploader-text">
         <button class="userinfo-nickname">点击查看我的房券</button>
       </navigator>
     </view>
-  </view>
+    <view class="searchInput"><input style="width:100%" bindinput="searchInput" placeholder="输入关键字查询" value="{{searchValue}}" ></input></view><button bindtap="searchByKey" class="icon_search"></button>
+    
+    </view>
+  
 
   <!-- 选择时段 -->
   <!-- 公告 -->
@@ -33,6 +36,7 @@
   </swiper>
 </view>
 <!-- 公告 end -->
+  
 
   <view class="table">
     <view class="tr bg-w">
@@ -95,7 +99,7 @@
 
   <modal hidden="{{hiddenDetailModal}}" height='60%' bindcancel="modalCancel" bindconfirm='modalConfirm'>
     <view class='modal-content'>城市：{{detailHotel.hotelCity}}</view>
-    <view class='modal-content'>酒店名：{{detailHotel.hotelName}}</view>
+    <view class='modal-content'><text selectable='true'>酒店名：{{detailHotel.hotelName}}</text></view>
     <view class='modal-content'>单晚房价：{{detailHotel.hotelPrice}}</view>
     <view class='modal-content'>可用数量：{{detailHotel.hotelCount}}</view>
     <view class='modal-content'>

@@ -8,8 +8,8 @@ page {
 }
 
 .userinfo, .uploader, .tunnel {
-  margin-top: 40rpx;
-  height: 140rpx;
+ margin-top: 0;
+  height: 130rpx;
   width: 100%;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -39,6 +39,8 @@ page {
   color: #007aff;
   background-color: white;
   background-size: cover;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .userinfo-nickname::after {
@@ -241,6 +243,7 @@ page {
 .filterList-sort-list, .all-sort-list, .nearby-sort-son, .nearby-sort-list,
 .capacity-sort-list, .filterList, .filterList-footer {
   background: whitesmoke;
+  
 }
 
 .filterList-sort-list, .all-sort-list, .nearby-sort-son, .nearby-sort-list,
@@ -248,13 +251,26 @@ page {
   flex-direction: column;
   border-top: 1px solid rgba(0, 0, 0, 0);
   display: flex;
+  
 }
 
-.filterList-sort, .all-sort, .nearby-sort-son, .nearby-sort, .capacity-sort {
+.filterList-sort, .nearby-sort-son, .nearby-sort, .capacity-sort {
   font-size: 25rpx;
   height: 70rpx;
   line-height: 70rpx;
   margin-left: 30rpx;
+}
+
+.all-sort{
+  font-size: 25rpx;
+  height: 70rpx;
+  line-height: 70rpx;
+  margin-left:5px;
+  margin-right:5px;
+  border: 1px solid black;
+  padding-left: 3px;
+padding-right: 3px;
+
 }
 
 /* ---------------------------------- */
@@ -497,7 +513,7 @@ page {
 
 /* 公告部分 */
 .adsec{
-  width: 90%;
+  width: 95%;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -527,3 +543,19 @@ page {
   letter-spacing: 2px;
 }
 
+.searchInput{
+  border:1rpx solid gray;
+  width: 40%;
+  margin-left:10px 
+}
+
+
+/* .icon_search {
+    vertical-align: middle;
+    display: inline-block;
+} */
+.icon_search {
+    width: 20px;
+    height: 25px;
+    background: transparent url(https://res.wx.qq.com/community/dist/images/search_icon_955e7c.svg) no-repeat 0 0;
+}

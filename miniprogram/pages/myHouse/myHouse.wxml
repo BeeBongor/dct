@@ -144,10 +144,16 @@
         <label class="title col-0">交易模式
           <label class="redLabel">*</label>
         </label>
+        
         <!-- <input class="input_base input_h30 col-1 " name="count " value="线上代订/电子券/线下邮寄 "></input> -->
-        <view class="input_h30 col-1 right_board">
+        <!-- <view class="input_h30 col-1 right_board">
           <Select class="" index="transRoad" bindInput="transRoadInput" prop-array='{{transRoad}}'></Select>
-        </view>
+        </view> -->
+        <picker class="input_h30 col-1 input_base" bindchange="transRoadInput" value="{{transRoadIndex}}" range="{{transRoadPicker}}">
+          <view class="picker">
+            {{transRoadPicker[transRoadIndex]}}
+          </view>
+        </picker>
 
 
       </view>
@@ -156,9 +162,14 @@
           <label class="redLabel">*</label>
         </label>
         <!-- <input class="input_base input_h30 col-1 " name="count " value="无/法定节假日/五一、十一、春节不可用"></input>  -->
-        <view class="input_h30 col-1 right_board">
+        <!-- <view class="input_h30 col-1 right_board">
           <Select class="" field="unUseTime" prop-array='{{unUseTime}}'></Select>
-        </view>
+        </view> -->
+        <picker class="input_h30 col-1 input_base" bindchange="unUseTimeInput" value="{{unUseTimeIndex}}" range="{{unUseTimePicker}}">
+          <view class="picker">
+            {{unUseTimePicker[unUseTimeIndex]}}
+          </view>
+        </picker>
 
 
       </view>
@@ -230,9 +241,9 @@
         <label class="title col-0 ">交易模式
           <label class="redLabel">*</label>
         </label>
-        <picker class="input_h30 col-1 input_base" bindchange="bindTransRoadPickerChange" value="{{transRoadIndex}}" range="{{editTransRoadPicker}}">
+        <picker class="input_h30 col-1 input_base" bindchange="bindTransRoadPickerChange" value="{{editTransRoadIndex}}" range="{{editTransRoadPicker}}">
           <view class="picker">
-            {{editTransRoadPicker[transRoadIndex]}}
+            {{editTransRoadPicker[editTransRoadIndex]}}
           </view>
         </picker>
       </view>
@@ -241,9 +252,9 @@
         <label class="title col-0 ">不可用时段
           <label class="redLabel">*</label>
         </label>
-        <picker class="input_h30 col-1 input_base" bindchange="bindPickerChange" value="{{unUseTimeIndex}}" range="{{editUseTimePicker}}">
+        <picker class="input_h30 col-1 input_base" bindchange="bindPickerChange" value="{{editUnUseTimeIndex}}" range="{{editUnUseTimePicker}}">
           <view class="picker">
-            {{editUseTimePicker[unUseTimeIndex]}}
+            {{editUnUseTimePicker[editUnUseTimeIndex]}}
           </view>
         </picker>
       </view>

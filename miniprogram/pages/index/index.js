@@ -3,9 +3,11 @@ const app = getApp()
 const db = wx.cloud.database()
 var a = -1;
 var b = -1;
+var searchKey = "";
 var pageSize = 20;
 var c = -1;
 var d = -1;
+var chooseCity = '';
 var city = 'all'; //默认全部，条件：所有的城市
 var states = null;
 const _ = db.command;
@@ -18,6 +20,8 @@ var filterObj = {
 var transRoad = 'all'; //默认全部 枚举值 1、线上代订，2、线下邮寄
 Page({
   data: {
+    theShowCity: "全部",
+    searchValue: "",
     announcementHidden: true,
     announcementContent: [],
     pageChooseHidden: true,
@@ -51,6 +55,14 @@ Page({
   },
 
   onPullDownRefresh() {
+    filterObj = {
+      disable: _.neq(1),
+      expireDate: _.gt(nextMonth)
+    };
+    searchKey = "";
+    this.setData({
+      searchValue: ""
+    })
     this.getAllHotelInfo();
     this.getAllCityInfo();
     wx.stopPullDownRefresh();
@@ -126,21 +138,21 @@ Page({
     this.getAnnouncementInfo();
   },
 
-  getAnnouncementInfo(){
+  getAnnouncementInfo() {
     db.collection('announcement')
       .where({
         disable: _.neq(1)
       }).get({
-        success:res=>{
+        success: res => {
           console.log(res)
-          if(res.data.length>0){
+          if (res.data.length > 0) {
             this.setData({
               announcementHidden: false,
               announcementContent: res.data
             })
           }
         },
-        fail:res=>{
+        fail: res => {
 
         }
       })
@@ -192,7 +204,7 @@ Page({
   getHotelCountByCondition(filterObj) {
     return new Promise((resolve, reject) => {
       filterObj.disable = _.neq(1);
-      db.collection('hotelCollection').orderBy("priority", "desc").where(filterObj).count({
+      db.collection('hotelCollection').where(filterObj).count({
         success: res => {
           resolve(res)
         },
@@ -332,53 +344,54 @@ Page({
     })
   },
 
-  // onGetHouseByCondition: function(condition) {
-  //   console.log(condition)
-  //   // 创建数据库实例
-  //   // const db = wx.cloud.database()
-
-  //   // 2. 构造查询语句
-  //   // collection 方法获取一个集合的引用
-  //   // 可以使用where 方法传入一个对象，数据库返回集合中字段等于指定值的 JSON 文档。API 也支持高级的查询条件（比如大于、小于、in 等）
-  //   // get 方法会触发网络请求，往数据库取数据
-
-  //   let filterObj = {};
-  //   if (condition.hotelCity.length > 0 && condition.hotelCity !== "全部") {
-  //     console.log("condition:" + condition.hotelCity);
-  //     filterObj.hotelCity = _.eq(condition.hotelCity);
-  //   }
-
-  //   this.getHotelCountByCondition(filterObj).then(res => {
-
-  //   })
-
-  //   // if(condition.)
-  //   db.collection('hotelCollection').where(filterObj).get({
-  //     success: res => {
-  //       console.log(res);
-  //       states = 6;
-  //       this.setData({
-  //         allHotelInfo: res.data,
-  // //         // a:a+1,
-  //         states: states
-  //       })
-  //     }
-  //   })
-
-  //   // this.
-  // },
-
   selectByCity: function(e) {
-    console.log(e.target.dataset.city);
     if (e.target.dataset.city === "全部") {
-      filterObj.hotelCity = _.neq(null);
+      chooseCity = '';
     } else {
-      filterObj.hotelCity = _.eq(e.target.dataset.city);
+      chooseCity = e.target.dataset.city;
+    }
+    if (searchKey != "") {
+      filterObj = _.or([{
+          hotelName: db.RegExp({
+            regexp: '.*' + searchKey,
+            options: 'i',
+          })
+        },
+        {
+          hotelCity: db.RegExp({
+            regexp: '.*' + searchKey,
+            options: 'i',
+          })
+        },
+        {
+          hotelContact: db.RegExp({
+            regexp: '.*' + searchKey,
+            options: 'i',
+          })
+        }
+      ]).and([{
+        disable: _.neq(1),
+        expireDate: _.gt(nextMonth),
+        hotelCity: db.RegExp({
+          regexp: '.*' + chooseCity,
+          options: 'i',
+        })
+      }]);
+    } else {
+      filterObj = {
+        disable: _.neq(1),
+        expireDate: _.gt(nextMonth),
+        hotelCity: db.RegExp({
+          regexp: '.*' + chooseCity,
+          options: 'i',
+        })
+      };
     }
     this.getAllHotelInfo();
     states = 6;
     this.setData({
-      states: states
+      states: states,
+      theShowCity: e.target.dataset.city
     })
     // this.onGetHouseByCondition(queryCondition);
     // this.addCityPriorityByName();
@@ -394,43 +407,7 @@ Page({
     } else {
       states = 0;
     }
-    // if (num == 0) {
-    //   states = 0;
-    //   a += 1;
-    //   b = -1;
-    //   c = -1;
-    //   d = -1;
-    //   if (a % 2 == 1) {
-    //     states = 6;
-    //   }
-    // } else if (num == 1) {
-    //   states = 1;
-    //   a = -1;
-    //   b += 1;
-    //   c = -1;
-    //   d = -1;
-    //   if (b % 2 == 1) {
-    //     states = 6;
-    //   }
-    // } else if (num == 2) {
-    //   states = 2;
-    //   a = -1;
-    //   b = -1;
-    //   c += 1;
-    //   d = -1;
-    //   if (c % 2 == 1) {
-    //     states = 6;
-    //   }
-    // } else if (num == 3) {
-    //   states = 3;
-    //   a = -1;
-    //   b = -1;
-    //   c = -1;
-    //   d += 1;
-    //   if (d % 2 == 1) {
-    //     states = 6;
-    //   }
-    // }
+
     console.log("states:" + states)
 
     this.setData({
@@ -469,5 +446,100 @@ Page({
     this.setData({
       hiddenDetailModal: true
     })
+  },
+
+  searchInput(e) {
+    searchKey = e.detail.value;
+  },
+
+  searchByKey() {
+    if (searchKey == "" && this.data.searchValue == "") {
+      return
+    }
+    this.setData({
+      searchValue: searchKey
+    })
+    if (chooseCity == "") {
+      filterObj = _.or([{
+          hotelName: db.RegExp({
+            regexp: '.*' + searchKey,
+            options: 'i',
+          })
+        },
+        {
+          hotelCity: db.RegExp({
+            regexp: '.*' + searchKey,
+            options: 'i',
+          })
+        },
+        {
+          hotelContact: db.RegExp({
+            regexp: '.*' + searchKey,
+            options: 'i',
+          })
+        }
+      ]).and([{
+        disable: _.neq(1),
+        expireDate: _.gt(nextMonth)
+      }]);
+    } else {
+      filterObj = _.or([{
+          hotelName: db.RegExp({
+            regexp: '.*' + searchKey,
+            options: 'i',
+          })
+        },
+        {
+          hotelCity: db.RegExp({
+            regexp: '.*' + searchKey,
+            options: 'i',
+          })
+        },
+        {
+          hotelContact: db.RegExp({
+            regexp: '.*' + searchKey,
+            options: 'i',
+          })
+        }
+      ]).and([{
+        disable: _.neq(1),
+        expireDate: _.gt(nextMonth),
+        hotelCity: db.RegExp({
+          regexp: '.*' + chooseCity,
+          options: 'i',
+        })
+      }]);
+    }
+
+    this.getHotelCountByCondition(filterObj).then(res => {
+      console.log("查询结果", res),
+        console.log("总数" + res.total);
+      var hotelCount = res.total;
+
+      var temp = Math.ceil(hotelCount / pageSize)
+      var hiddenTemp = true;
+      if (temp > 1) {
+        hiddenTemp = false;
+      }
+      this.setData({
+        pageChooseHidden: hiddenTemp,
+        totalPage: temp,
+        currentPage: 0
+      });
+      //查首页page
+      this.getHotelInfoByPageAndFilter(0);
+      wx.showToast({
+        title: '查询成功',
+        duration: 500,
+      })
+    }).catch(error => {
+      console.log("查询结果", error);
+      wx.showToast({
+        icon: "",
+        title: '查询失败',
+      })
+    })
   }
+
+
 })

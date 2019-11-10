@@ -10,6 +10,8 @@ var contact = {
   name: "",
   tel: ""
 };
+var transRoad = '';
+var unUseTime = '';
 var price = '';
 var count = -1;
 var beizhu = '';
@@ -19,16 +21,21 @@ const _ = db.command;
 Page({
   data: {
     editUpdateFlag:false,
-    editUseTimePicker: ["无", "五一、十一、春节", "法定节假日均不可用", "参考备注"],
-    editTransRoadPicker: ["线上代订", "线下邮寄", "电子券", "参考备注"],
+    editUnUseTimePicker: [],
+    editTransRoadPicker: [],
+    transRoadPicker:[],
+    transRoadIndex:0,
+    
+    unUseTimePicker: [],
+    unUseTimeIndex: 0,
     userInfo: {},
     openId: '',
     myAllHotelInfo: [],
     showModalStatus: false,
     show: false, //控制下拉列表的显示隐藏，false隐藏、true显示
     selectData: ['1', '2', '3'], //下拉列表的数据
-    transRoadIndex: 0, //选择的下拉列表下标
-    unUseTimeIndex: 0,
+    editTransRoadIndex: 0, //选择的下拉列表下标
+    editUnUseTimeIndex: 0,
     expireDate: "",
     editExpireDate: "",
     editDetailInfo: {},
@@ -187,6 +194,46 @@ Page({
       }
     })
     this.getMyHotelInfo()
+    this.getTransRoadEnum();
+    this.getUnUseTimeEnum();
+  },
+
+  getTransRoadEnum(){
+    var filter = {key:_.eq("transRoad")};
+    this.getEnumValueByFilter(filter).then(res=>{
+      console.log("transRoad get success", res);
+      this.setData({
+        transRoadPicker: res.data[0].value,
+        editTransRoadPicker: res.data[0].value
+      })
+    }).catch(res=>{
+      console.log("transRoad get fail",res);
+    })
+  },
+
+  getUnUseTimeEnum() {
+    var filter = { key: _.eq("unUseTime") };
+    this.getEnumValueByFilter(filter).then(res => {
+      console.log("unUseTimePicker get success", res);
+      this.setData({
+        unUseTimePicker: res.data[0].value,
+        editUnUseTimePicker: res.data[0].value
+      })
+    }).catch(res => {
+      console.log("unUseTimePicker get fail", res);
+    })
+  },
+
+  getEnumValueByFilter(filter){
+    return new Promise(function (resolve, reject) {
+      db.collection("EnumValue").where(filter).get({
+        success:res=>{
+          resolve(res)
+        },
+        fail:res=>{
+          reject(res)
+        }
+      })})
   },
 
   getMyHotelInfo() {
@@ -303,7 +350,20 @@ Page({
   },
 
   transRoadInput(e) {
-    consolo.log("test" + e)
+      console.log('picker发送选择改变，携带值为', e.detail.value)
+      this.setData({
+        transRoadIndex: e.detail.value
+      })
+      transRoad = this.data.transRoadPicker[e.detail.value]
+  },
+
+
+  unUseTimeInput(e) {
+    console.log('picker发送选择改变，携带值为', e.detail.value)
+    this.setData({
+      unUseTimeIndex: e.detail.value
+    })
+    unUseTime = this.data.unUseTimePicker[e.detail.value]
   },
 
   submitInfoCheck() {
@@ -322,18 +382,18 @@ Page({
       return pass;
       // return
     }
-    if (app.globalData.unUseTime == "" || app.globalData.transRoad == "") {
-      var error = app.globalData.transRoad == "" ? "请选择交易模式" : "请选择不可用时段"
+    if (unUseTime == "" || transRoad == "") {
+      var error = transRoad == "" ? "请选择交易模式" : "请选择不可用时段"
       wx.showToast({
         title: error,
       })
       return pass;
       // return
     }
-    if (hotelName.length == 0 || hotelName.length > 12) {
+    if (hotelName.length == 0 || hotelName.length > 20) {
       this.setData({
         hiddenCondition: false,
-        errorInfo: "酒店名未填写或长度超过12字符"
+        errorInfo: "酒店名未填写或长度超过20字符"
       })
       wx.showToast({
         title: '酒店名有误',
@@ -517,9 +577,9 @@ Page({
               ext: beizhu,
               openId: app.globalData.openid,
               createTime: now,
-              transRoad: app.globalData.transRoad,
-              unUseTime: app.globalData.unUseTime,
-              priority: 0, //权重默认为0
+              transRoad: transRoad,
+              unUseTime: unUseTime,
+              priority: 10, //权重默认为10
               expireDate: expireDate
             },
             success: res => {
@@ -675,6 +735,12 @@ Page({
     price = '';
     count = -1;
     beizhu = '';
+    transRoad='';
+    this.setData({
+      transRoadIndex:0,
+      unUseTimeIndex: 0
+    })
+    unUseTime='';
   },
 
 
@@ -769,8 +835,8 @@ Page({
         this.setData({
           editDetailInfo: hotelInfo[i],
           editExpireDate: hotelInfo[i].expireDate,
-          unUseTimeIndex: this.data.editUseTimePicker.indexOf(hotelInfo[i].unUseTime),
-          transRoadIndex: this.data.editTransRoadPicker.indexOf(hotelInfo[i].transRoad),
+          editUnUseTimeIndex: this.data.editUnUseTimePicker.indexOf(hotelInfo[i].unUseTime),
+          editTransRoadIndex: this.data.editTransRoadPicker.indexOf(hotelInfo[i].transRoad),
           editModalHidden: false
         })
         return
@@ -792,9 +858,9 @@ Page({
   bindPickerChange(e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
     this.setData({
-      unUseTimeIndex: e.detail.value
+      editUnUseTimeIndex: e.detail.value
     })
-    this.data.editDetailInfo.unUseTime = this.data.editUseTimePicker[e.detail.value]
+    this.data.editDetailInfo.unUseTime = this.data.editUnUseTimePicker[e.detail.value]
     this.data.editUpdateFlag = true
 
   },
@@ -802,7 +868,7 @@ Page({
   bindTransRoadPickerChange(e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
     this.setData({
-      transRoadIndex: e.detail.value
+      editTransRoadIndex: e.detail.value
     })
     this.data.editDetailInfo.transRoad = this.data.editTransRoadPicker[e.detail.value]
     this.data.editUpdateFlag = true
