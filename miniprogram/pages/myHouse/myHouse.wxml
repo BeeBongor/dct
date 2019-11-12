@@ -285,7 +285,7 @@
   <view class='container'>
     <view class="logo">
 
-      <view class="logo_ground">@Copyright 建议&合作 15071476193</view>
+      <view class="logo_ground"><text selectable="true">{{barbottom}}</text></view>
     </view>
   </view>
 

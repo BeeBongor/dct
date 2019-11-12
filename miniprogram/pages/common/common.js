@@ -1,3 +1,5 @@
+const db = wx.cloud.database();
+
 function onGetHouseByCondition(condition) {
   return new Promise(function (resolve, reject){
   // 创建数据库实例
@@ -21,6 +23,7 @@ function onGetHouseByCondition(condition) {
       filterObj.hotelCity = _.eq(condition.hotelCity);
       break;
   }
+  filterObj.disable = _.neq(1);
   // console.log("filterObj:"+filterObj.openId);
 
   // if(condition.)
@@ -38,6 +41,19 @@ function onGetHouseByCondition(condition) {
   })
 
   // this.
+}
+
+function getEnumValueByFilter(filter) {
+  return new Promise(function (resolve, reject) {
+    db.collection("EnumValue").where(filter).get({
+      success: res => {
+        resolve(res)
+      },
+      fail: res => {
+        reject(res)
+      }
+    })
+  })
 }
 
 // 获得当前时间 2019-02-02 14:06:08
@@ -133,3 +149,4 @@ module.exports.getNowTime = getNowTime;
 module.exports.getNextYearDate = getNextYearDate;
 module.exports.getNowDate = getNowDate;
 module.exports.getNextMonthDate = getNextMonthDate;
+module.exports.getEnumValueByFilter = getEnumValueByFilter;

@@ -36,7 +36,7 @@ page {
 
 .userinfo-nickname {
   font-size: 32rpx;
-  color: #007aff;
+  color: blue;
   background-color: white;
   background-size: cover;
   padding-left: 0;
@@ -153,6 +153,11 @@ page {
   font-size: 28rpx;
 }
 
+.hotelMap{
+  height: 400rpx;
+  width:400px
+}
+
 .td {
   width: 40%;
   display: flex;
@@ -170,6 +175,8 @@ page {
   text-align: center;
   border-right: 4rpx solid #ececec;
   font-size: 25rpx;
+  /* font-weight: bold; */
+  color:blue;
 }
 
 .td_unUseTime {
@@ -433,7 +440,7 @@ padding-right: 3px;
 }
 
 .watch {
-  color: #007aff;
+  color:blue;
 }
 
 .modal-content {

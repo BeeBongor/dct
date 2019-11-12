@@ -5,6 +5,7 @@ var a = -1;
 var b = -1;
 var searchKey = "";
 var pageSize = 20;
+var common = require("../common/common.js");
 var c = -1;
 var d = -1;
 var chooseCity = '';
@@ -20,12 +21,14 @@ var filterObj = {
 var transRoad = 'all'; //默认全部 枚举值 1、线上代订，2、线下邮寄
 Page({
   data: {
+    barbottom: "建议&合作 微信:15071476193",
+    intervalTime: 2000,
     theShowCity: "全部",
     searchValue: "",
     announcementHidden: true,
     announcementContent: [],
     pageChooseHidden: true,
-
+    loginButton: "登录查看我的房券",
     totalPage: 0,
     currentPage: 0,
     // local  :,
@@ -45,7 +48,7 @@ Page({
       num: "21",
       name: "全部"
     }],
-    avatarUrl: './user-unlogin.png',
+    avatarUrl: '../../images/user-unlogin.png',
     userInfo: {},
     logged: false,
     takeSession: false,
@@ -78,6 +81,7 @@ Page({
       success: res => {
         console.log('[云函数] [login] user openid: ', res.result.openid)
         console.log("[云函数] [login] user", res.result)
+        
         app.globalData.openid = res.result.openid
         // wx.navigateTo({
         //   url: '../userConsole/userConsole',
@@ -136,27 +140,65 @@ Page({
     this.getAllCityInfo();
     this.popSuccessTest();
     this.getAnnouncementInfo();
+    this.getBottomBarInfo();
   },
+
+  getBottomBarInfo() {
+    var filter = {
+      key: _.eq("bottomBar")
+    };
+    common.getEnumValueByFilter(filter).then(res => {
+      console.log("bottomBar get success", res);
+      if (res.data[0].value != null && res.data[0].value != "") {
+        this.setData({
+          barbottom: res.data[0].value
+        })
+      }
+    }).catch(res => {
+      console.log("bottomBar get fail", res);
+    })
+  },
+
+
 
   getAnnouncementInfo() {
     db.collection('announcement')
       .where({
         disable: _.neq(1)
-      }).get({
+      }).orderBy("priority", "desc").get({
         success: res => {
-          console.log(res)
+          console.log("公告获取成功", res)
           if (res.data.length > 0) {
             this.setData({
               announcementHidden: false,
               announcementContent: res.data
             })
+            this.getIntervalTime();
           }
         },
         fail: res => {
-
+          console.log("公告获取失败")
         }
       })
   },
+
+  getIntervalTime() {
+    var filter = {
+      key: _.eq("intervalTime")
+    };
+    common.getEnumValueByFilter(filter).then(res => {
+      console.log("getIntervalTime get success", res);
+      if (res.data[0].value != null && res.data[0].value != "") {
+        this.setData({
+          intervalTime: res.data[0].value
+        })
+      }
+    }).catch(res => {
+      console.log("getIntervalTime get fail", res);
+    })
+  },
+
+
 
   getAllCityInfo() {
     app.globalData.city = [];
@@ -271,23 +313,49 @@ Page({
     }).catch(error => {
       console.log("查询结果", error);
     })
-
-
-
   },
 
-
+  onShareAppMessage: function () {
+    // return custom share data when user share.
+  },
 
   onGetUserInfo: function(e) {
     if (!this.data.logged && e.detail.userInfo) {
       this.setData({
         logged: true,
         avatarUrl: e.detail.userInfo.avatarUrl,
-        userInfo: e.detail.userInfo
+        userInfo: e.detail.userInfo,
+        loginButton: "查看我的房券",
+      })
+      app.globalData.username = e.detail.userInfo.nickName
+      wx.navigateTo({ //保留当前页面，跳转到应用内的某个页面（最多打开5个页面，之后按钮就没有响应的）
+        url: '../myHouse/myHouse'
+      });
+    } else if (this.data.logged) {
+      this.setData({
+        loginButton: "查看我的房券",
+      })
+
+      wx.navigateTo({ //保留当前页面，跳转到应用内的某个页面（最多打开5个页面，之后按钮就没有响应的）
+        url: '../myHouse/myHouse',
+
+        success: function(res) {
+          console.log("跳转成功", res)
+        },
+        fail: function(res) {
+          console.log("跳转失败", res)
+        },
+        complete: function(res) {
+          console.log("跳转完成", res)
+        },
+
+      });
+    } else {
+      wx.showToast({
+        title: '登录后才可继续操作',
       })
     }
   },
-
 
 
   onClickMyHouse: function() {
@@ -434,6 +502,21 @@ Page({
       icon: '',
       duration: 500, //停留时间
     })
+  },
+
+
+  showHotelMap(e){
+    console.log('start to show map',e)
+    var toShowId = e.currentTarget.dataset.id
+    var hotelInfo = this.data.allHotelInfo
+    for (var i in hotelInfo) {
+      if (hotelInfo[i]._id === toShowId) {
+        wx.navigateTo({ //保留当前页面，跳转到应用内的某个页面（最多打开5个页面，之后按钮就没有响应的）
+          url: '../hotelLocation/hotelLocation?city=' + hotelInfo[i].hotelCity+"&keyword="+hotelInfo[i].hotelName
+        });
+        return
+      }
+    } 
   },
 
   modalCancel() {

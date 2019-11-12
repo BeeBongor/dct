@@ -6,12 +6,13 @@ var success = false;
 const regeneratorRuntime = require('../../lib/runtime')
 var cityName = '';
 var hotelName = '';
+var insertStatus = 0;
 var contact = {
   name: "",
   tel: ""
 };
-var transRoad = '';
-var unUseTime = '';
+var transRoad = '线上代订';
+var unUseTime = '无';
 var price = '';
 var count = -1;
 var beizhu = '';
@@ -20,6 +21,7 @@ const _ = db.command;
 
 Page({
   data: {
+    barbottom: "建议&合作 微信:15071476193",
     editUpdateFlag:false,
     editUnUseTimePicker: [],
     editTransRoadPicker: [],
@@ -93,7 +95,7 @@ Page({
       hiddenCondition: false,
       errorInfo: ""
     })
-    cityName = e.detail.value
+    cityName = e.detail.value.trim()
     // console.log(cityName);
   },
 
@@ -102,7 +104,7 @@ Page({
       hiddenCondition: false,
       errorInfo: ""
     })
-    hotelName = e.detail.value
+    hotelName = e.detail.value.trim()
   },
 
   contactInput(e) {
@@ -110,7 +112,7 @@ Page({
       hiddenCondition: false,
       errorInfo: ""
     })
-    contact.name = e.detail.value
+    contact.name = e.detail.value.trim()
   },
 
   contactTelInput(e) {
@@ -118,7 +120,7 @@ Page({
       hiddenCondition: false,
       errorInfo: ""
     })
-    contact.tel = e.detail.value
+    contact.tel = e.detail.value.trim()
   },
 
   priceInput(e) {
@@ -126,7 +128,7 @@ Page({
       hiddenCondition: false,
       errorInfo: ""
     })
-    price = e.detail.value
+    price = e.detail.value.trim()
   },
 
   countInput(e) {
@@ -134,7 +136,7 @@ Page({
       hiddenCondition: false,
       errorInfo: ""
     })
-    count = e.detail.value
+    count = e.detail.value.trim()
   },
 
   beizhuInput(e) {
@@ -142,7 +144,23 @@ Page({
       hiddenCondition: false,
       errorInfo: ""
     })
-    beizhu = e.detail.value
+    beizhu = e.detail.value.trim()
+  },
+
+  getBottomBarInfo() {
+    var filter = {
+      key: _.eq("bottomBar")
+    };
+    common.getEnumValueByFilter(filter).then(res => {
+      console.log("bottomBar get success", res);
+      if (res.data[0].value != null && res.data[0].value != "") {
+        this.setData({
+          barbottom: res.data[0].value
+        })
+      }
+    }).catch(res => {
+      console.log("bottomBar get fail", res);
+    })
   },
 
   onReady: function() {
@@ -160,9 +178,11 @@ Page({
   onReachBottom: function() {
     // Do something when page reach bottom.
   },
-  onShareAppMessage: function() {
+
+  onShareAppMessage: function () {
     // return custom share data when user share.
   },
+  
   onPageScroll: function() {
     // Do something when page scroll
   },
@@ -196,6 +216,7 @@ Page({
     this.getMyHotelInfo()
     this.getTransRoadEnum();
     this.getUnUseTimeEnum();
+    this.getBottomBarInfo();
   },
 
   getTransRoadEnum(){
@@ -300,6 +321,9 @@ Page({
       })
       return
     }
+    this.setData({
+      hiddenCondition:true
+    })
     var currentStatu = e.currentTarget.dataset.statu;
     this.util(currentStatu)
     // this.selectModel()
@@ -455,6 +479,13 @@ Page({
     if (pass === "false") {
       return
     }
+    if(insertStatus==1){
+      wx.showToast({
+        title: '正在提交',
+      })
+      return
+    }
+    insertStatus = 1;//正在insert
     //先查出数据库有没有该用户信息，若有，则视情况更新，若没有
     var dbName = '';
     var dbTel = '';
@@ -496,6 +527,7 @@ Page({
       contact.name = contact.name == "" ? dbName : contact.name;
 
       this.secCheckAndInsert();
+      insertStatus = 0;
     }).catch((res) => {
       console.log(res)
       if (contact.tel == "" || contact.name == "") {
@@ -505,6 +537,7 @@ Page({
         })
         return
       }
+      insertStatus = 0;
     })
 
   },
@@ -521,7 +554,7 @@ Page({
         content: toCheck
       },
     }).then(res => {
-      console.log("内容安全审查结果：" + JSON.stringify(res));
+      console.log("内容安全审查结果：" ,res);
       if (res.result.code == "200") {
         //检测通过
         if (app.globalData.city.indexOf(cityName) == -1) {
@@ -661,6 +694,7 @@ Page({
         .add({
           data: {
             userId: app.globalData.openid,
+            userName: app.globalData.username,
             contactName: contact.name,
             contactTel: contact.tel,
             createTime: now
@@ -735,12 +769,12 @@ Page({
     price = '';
     count = -1;
     beizhu = '';
-    transRoad='';
+    transRoad = '线上代订';
+    unUseTime = '无';
     this.setData({
       transRoadIndex:0,
       unUseTimeIndex: 0
     })
-    unUseTime='';
   },
 
 
@@ -911,7 +945,7 @@ Page({
 
   editpriceInput(e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
-    this.data.editDetailInfo.hotelPrice = e.detail.value
+    this.data.editDetailInfo.hotelPrice = e.detail.value.trim()
     this.data.editUpdateFlag = true
     console.log(this.data.editDetailInfo)
     this.hiddenEditError();
@@ -919,7 +953,7 @@ Page({
 
   editcountInput(e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
-    this.data.editDetailInfo.hotelCount = e.detail.value
+    this.data.editDetailInfo.hotelCount = e.detail.value.trim()
     this.data.editUpdateFlag = true
     console.log(this.data.editDetailInfo)
     this.hiddenEditError();
@@ -927,7 +961,7 @@ Page({
 
   editbeizhuInput(e) {
     console.log('picker发送选择改变，携带值为', e.detail.value)
-    this.data.editDetailInfo.ext = e.detail.value
+    this.data.editDetailInfo.ext = e.detail.value.trim()
     this.data.editUpdateFlag = true
     console.log(this.data.editDetailInfo)
     this.hiddenEditError();
@@ -961,7 +995,7 @@ Page({
     }
     //安全审核
     this.secCheckAndUpdate();
-
+    //todo 刷新页面
   },
 
   secCheckAndUpdate() {

@@ -16,10 +16,7 @@ exports.main = async (event, context) => {
         content: event.content
       
     });
-    
-
-  
-  console.log('result:' + JSON.stringify(result));
+    console.log("内容安全审查结果：", res);
 
   if (result && result.errCode.toString() === '87014') {
     return {

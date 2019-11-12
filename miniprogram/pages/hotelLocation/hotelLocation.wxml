@@ -1,0 +1,4 @@
+<view>
+  <map id="myMap" style="width: 100%; height:800px;" subkey="RDDBZ-MJACF-OK5JC-NCRJI-4QAFE-LFFMS" scale='16' markers="{{markers}}"></map>
+
+</view>

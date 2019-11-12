@@ -20,7 +20,9 @@ App({
       openid:'',
       city:[],
       transRoad:"",
-      unUseTime:""
+      unUseTime:"",
+      username:'',
+
     }
   }
 })
