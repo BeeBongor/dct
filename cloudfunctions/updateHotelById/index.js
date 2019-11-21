@@ -13,6 +13,8 @@ exports.main = async (event, context) => {
 
   console.log("云函数入口" + event.content);
   var hotel = event.content;
+  console.log("参数日志:id " + hotel._id + " hotel.contactTel: " + hotel.contactTel
+    + "hotel.hotelPrice: " + hotel.hotelPrice + "hotelContact: " + hotel.contactName + " " + hotel.contactTel + "updateTime: " + hotel.updateTime + "hotelCount: " + hotel.hotelCount);
 
   try {
     return db.collection('hotelCollection')
